@@ -11,7 +11,7 @@ namespace Core.Services
     {
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
-        Task<IReadOnlyList<T>> GetAllWithSpecification(ISpecification<T> specification);
-        Task<T> GetEntityWithSpecification(ISpecification<T> specification);
+        Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecification<T> specification);
+        Task<T> GetEntityWithSpecificationAsync(ISpecification<T> specification);
     }
 }
