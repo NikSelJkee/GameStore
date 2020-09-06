@@ -1,2 +1,2 @@
-# GameStore
+# Game Store
 *some description*
