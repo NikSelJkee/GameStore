@@ -30,9 +30,10 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<GameToReturnDto>>> GetGames()
+        public async Task<ActionResult<IReadOnlyList<GameToReturnDto>>> GetGames(
+            [FromQuery]GameSpecificationParams gameParams)
         {
-            var specification = new GameWithCompaniesAndGenresSpecification();
+            var specification = new GameWithCompaniesAndGenresSpecification(gameParams);
             var games = await _gamesRepository.GetAllWithSpecificationAsync(specification);
 
             return Ok(_mapper.Map<IReadOnlyList<GameToReturnDto>>(games));
