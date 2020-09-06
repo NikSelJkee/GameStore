@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Extensions;
 using API.Helpers;
 using API.Middlewares;
 using AutoMapper;
@@ -34,7 +35,8 @@ namespace API
                 options.UseSqlServer(Configuration.GetConnectionString("GameStoreConnection")));
             services.AddAutoMapper(typeof(MappingProfiles));
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddSwaggerDocumentation();
+            services.AddApplicationServices();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -48,6 +50,8 @@ namespace API
             app.UseAuthorization();
 
             app.UseStaticFiles();
+
+            app.UseSwaggerDocumentation();
 
             app.UseEndpoints(endpoints =>
             {
