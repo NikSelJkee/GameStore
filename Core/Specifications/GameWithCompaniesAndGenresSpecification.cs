@@ -7,7 +7,12 @@ namespace Core.Specifications
 {
     public class GameWithCompaniesAndGenresSpecification : BaseSpecification<Game>
     {
-        public GameWithCompaniesAndGenresSpecification(GameSpecificationParams gameParams)
+        public GameWithCompaniesAndGenresSpecification(GameSpecificationParams gameParams) 
+            : base(x =>
+                (string.IsNullOrEmpty(gameParams.Search) || x.Title.ToLower().Contains(gameParams.Search)) &&
+                (!gameParams.CompanyId.HasValue || x.CompanyId == gameParams.CompanyId) &&
+                (!gameParams.GenreId.HasValue || x.GenreId == gameParams.GenreId)
+            )
         {
             AddInclude(g => g.Company);
             AddInclude(g => g.Genre);
