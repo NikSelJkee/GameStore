@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Helpers;
+using AutoMapper;
 using Core.Services;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
@@ -29,6 +31,7 @@ namespace API
             services.AddControllers();
             services.AddDbContext<StoreContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("GameStoreConnection")));
+            services.AddAutoMapper(typeof(MappingProfiles));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         }
@@ -43,6 +46,8 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {

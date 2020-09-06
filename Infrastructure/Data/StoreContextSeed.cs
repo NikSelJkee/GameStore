@@ -50,7 +50,7 @@ namespace Infrastructure.Data
                         new Game { Title = "Dark Souls", Description = "RPG by From Software", Price = 1000, PictureUrl = "images/games/dark_souls.png", CompanyId = 2, GenreId = 2},
                         new Game { Title = "Dark Souls 2", Description = "RPG by From Software", Price = 1200, PictureUrl = "images/games/dark_souls_2.png", CompanyId = 2, GenreId = 2},
                         new Game { Title = "Dark Souls 3", Description = "RPG by From Software", Price = 1400, PictureUrl = "images/games/dark_souls_3.png", CompanyId = 2, GenreId = 2},
-                        new Game { Title = "Tales of Zesteria", Description = "RPG by Bandi Namco", Price = 1600, PictureUrl = "images/games/tales_of_zesteria.png", CompanyId = 3, GenreId = 3},
+                        new Game { Title = "Tales of Zestiria", Description = "RPG by Bandi Namco", Price = 1600, PictureUrl = "images/games/tales_of_zestiria.png", CompanyId = 3, GenreId = 3},
                         new Game { Title = "Tales of Berseria", Description = "RPG by Bandi Namco", Price = 1800, PictureUrl = "images/games/tales_of_berseria.png", CompanyId = 3, GenreId = 3},
                         new Game { Title = "Tales of Vesperia", Description = "RPG by Bandi Namco", Price = 2000, PictureUrl = "images/games/tales_of_vesperia.png", CompanyId = 3, GenreId = 3}
                     };
