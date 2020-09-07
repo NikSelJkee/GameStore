@@ -34,6 +34,9 @@ namespace API
             services.AddDbContext<StoreContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("GameStoreConnection")));
             services.AddAutoMapper(typeof(MappingProfiles));
+            services.AddCors(options =>
+                options.AddPolicy("CorsPolicy", policy =>
+                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
             services.AddSwaggerDocumentation();
             services.AddApplicationServices();
@@ -44,6 +47,8 @@ namespace API
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
+
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
 
