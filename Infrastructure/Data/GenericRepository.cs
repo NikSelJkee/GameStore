@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,9 +20,19 @@ namespace Infrastructure.Data
             _context = context;
         }
 
+        public async Task<T> AddAsync(T entity)
+        {
+            return (await _context.Set<T>().AddAsync(entity)).Entity;
+        }
+
         public async Task<int> CountAsync(ISpecification<T> specification)
         {
             return await ApplySpecification(specification).CountAsync();
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Set<T>().AnyAsync(x => x.Id == id);
         }
 
         public async Task<IReadOnlyList<T>> GetAllAsync()
@@ -42,6 +53,11 @@ namespace Infrastructure.Data
         public async Task<T> GetEntityWithSpecificationAsync(ISpecification<T> specification)
         {
             return await ApplySpecification(specification).FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> SaveAsync()
+        {
+            return await _context.SaveChangesAsync() >= 0; 
         }
 
         private IQueryable<T> ApplySpecification(ISpecification<T> specification)

@@ -16,6 +16,8 @@ namespace API.Helpers
                 .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company.Name))
                 .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre.Name))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<GameUrlResolver>());
+
+            CreateMap<GameForCreatingDto, Game>();
         }
     }
 }

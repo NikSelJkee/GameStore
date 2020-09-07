@@ -2,6 +2,7 @@
 using Core.Specifications;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,5 +15,8 @@ namespace Core.Services
         Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecification<T> specification);
         Task<T> GetEntityWithSpecificationAsync(ISpecification<T> specification);
         Task<int> CountAsync(ISpecification<T> specification);
+        Task<T> AddAsync(T entity);
+        Task<bool> ExistsAsync(int id);
+        Task<bool> SaveAsync();
     }
 }

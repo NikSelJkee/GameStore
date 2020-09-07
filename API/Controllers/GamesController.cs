@@ -1,4 +1,5 @@
 ﻿using API.Dtos;
+using API.Errors;
 using API.Helpers;
 using AutoMapper;
 using Core.Entities;
@@ -49,6 +50,9 @@ namespace API.Controllers
             var specification = new GameWithCompaniesAndGenresSpecification(id);
             var game = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
 
+            if (game == null)
+                return NotFound(new ApiResponse(404, "Game Not Found"));
+
             return Ok(_mapper.Map<GameToReturnDto>(game));
         }
 
@@ -66,6 +70,26 @@ namespace API.Controllers
             var genres = await _gameGenresRepository.GetAllAsync();
 
             return Ok(genres);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<GameToReturnDto>> CreateGame([FromBody]GameForCreatingDto gameForCreating)
+        {
+            if (!await _gameCompaniesRepository.ExistsAsync(gameForCreating.CompanyId))
+                return NotFound(new ApiResponse(404, "Company Not Found"));
+
+            if (!await _gameGenresRepository.ExistsAsync(gameForCreating.GenreId))
+                return NotFound(new ApiResponse(404, "Genre Not Found"));
+
+            var game = _mapper.Map<Game>(gameForCreating);
+
+            await _gamesRepository.AddAsync(game);
+            await _gamesRepository.SaveAsync();
+
+            var specification = new GameWithCompaniesAndGenresSpecification(game.Id);
+            var gameToReturn = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+
+            return Ok(_mapper.Map<GameToReturnDto>(gameToReturn));
         }
     }
 }
