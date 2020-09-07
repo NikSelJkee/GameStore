@@ -116,5 +116,20 @@ namespace API.Controllers
 
             return Ok(_mapper.Map<GameToReturnDto>(gameToReturn));
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGame(int id)
+        {
+            var specification = new GameWithCompaniesAndGenresSpecification(id);
+            var game = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+
+            if (game == null)
+                return NotFound(new ApiResponse(404, "Game Not Found"));
+
+            _gamesRepository.Remove(game);
+            await _gamesRepository.SaveAsync();
+
+            return Ok();
+        }
     }
 }

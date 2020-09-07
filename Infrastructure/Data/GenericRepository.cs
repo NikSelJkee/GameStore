@@ -55,6 +55,11 @@ namespace Infrastructure.Data
             return await ApplySpecification(specification).FirstOrDefaultAsync();
         }
 
+        public void Remove(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+        }
+
         public async Task<bool> SaveAsync()
         {
             return await _context.SaveChangesAsync() >= 0; 
