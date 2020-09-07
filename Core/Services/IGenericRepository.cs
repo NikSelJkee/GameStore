@@ -13,5 +13,6 @@ namespace Core.Services
         Task<T> GetByIdAsync(int id);
         Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecification<T> specification);
         Task<T> GetEntityWithSpecificationAsync(ISpecification<T> specification);
+        Task<int> CountAsync(ISpecification<T> specification);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using API.Dtos;
+using API.Helpers;
 using AutoMapper;
 using Core.Entities;
 using Core.Services;
@@ -30,13 +31,16 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<GameToReturnDto>>> GetGames(
+        public async Task<ActionResult<Pagination<GameToReturnDto>>> GetGames(
             [FromQuery]GameSpecificationParams gameParams)
         {
             var specification = new GameWithCompaniesAndGenresSpecification(gameParams);
-            var games = await _gamesRepository.GetAllWithSpecificationAsync(specification);
+            var countSpecification = new GameWithFilterForCountSpecification(gameParams);
+            var totalItems = await _gamesRepository.CountAsync(countSpecification);
+            var data = await _gamesRepository.GetAllWithSpecificationAsync(specification);
+            var games = _mapper.Map<IReadOnlyList<GameToReturnDto>>(data);
 
-            return Ok(_mapper.Map<IReadOnlyList<GameToReturnDto>>(games));
+            return Ok(new Pagination<GameToReturnDto>(gameParams.IndexPage, gameParams.PageSize, totalItems, games));
         }
 
         [HttpGet("{id}")]

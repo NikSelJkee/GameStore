@@ -17,6 +17,7 @@ namespace Core.Specifications
             AddInclude(g => g.Company);
             AddInclude(g => g.Genre);
             AddOrderBy(g => g.Title);
+            ApplyPaging(gameParams.PageSize * (gameParams.IndexPage - 1), gameParams.PageSize);
 
             if (!string.IsNullOrEmpty(gameParams.Sort))
             {
