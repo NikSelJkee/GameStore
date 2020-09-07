@@ -16,6 +16,7 @@ namespace Core.Services
         Task<T> GetEntityWithSpecificationAsync(ISpecification<T> specification);
         Task<int> CountAsync(ISpecification<T> specification);
         Task<T> AddAsync(T entity);
+        void Update(T entity);
         Task<bool> ExistsAsync(int id);
         Task<bool> SaveAsync();
     }

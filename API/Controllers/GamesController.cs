@@ -73,7 +73,8 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<GameToReturnDto>> CreateGame([FromBody]GameForCreatingDto gameForCreating)
+        public async Task<ActionResult<GameToReturnDto>> CreateGame(
+            [FromBody]GameForCreatingDto gameForCreating)
         {
             if (!await _gameCompaniesRepository.ExistsAsync(gameForCreating.CompanyId))
                 return NotFound(new ApiResponse(404, "Company Not Found"));
@@ -84,6 +85,30 @@ namespace API.Controllers
             var game = _mapper.Map<Game>(gameForCreating);
 
             await _gamesRepository.AddAsync(game);
+            await _gamesRepository.SaveAsync();
+
+            var specification = new GameWithCompaniesAndGenresSpecification(game.Id);
+            var gameToReturn = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+
+            return Ok(_mapper.Map<GameToReturnDto>(gameToReturn));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<GameToReturnDto>> UpdateGame(int id, 
+            [FromBody]GameForUpdatingDto gameForUpdating)
+        {
+            if (!await _gameCompaniesRepository.ExistsAsync(gameForUpdating.CompanyId))
+                return NotFound(new ApiResponse(404, "Company Not Found"));
+
+            if (!await _gameGenresRepository.ExistsAsync(gameForUpdating.GenreId))
+                return NotFound(new ApiResponse(404, "Genre Not Found"));
+
+            if (gameForUpdating.Id != id)
+                return BadRequest(new ApiResponse(400));
+
+            var game = _mapper.Map<Game>(gameForUpdating);
+
+            _gamesRepository.Update(game);
             await _gamesRepository.SaveAsync();
 
             var specification = new GameWithCompaniesAndGenresSpecification(game.Id);

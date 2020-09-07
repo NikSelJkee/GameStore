@@ -60,6 +60,11 @@ namespace Infrastructure.Data
             return await _context.SaveChangesAsync() >= 0; 
         }
 
+        public void Update(T entity)
+        {
+            _context.Update(entity).State = EntityState.Modified;
+        }
+
         private IQueryable<T> ApplySpecification(ISpecification<T> specification)
         {
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), specification);

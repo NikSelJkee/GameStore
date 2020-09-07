@@ -18,6 +18,7 @@ namespace API.Helpers
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<GameUrlResolver>());
 
             CreateMap<GameForCreatingDto, Game>();
+            CreateMap<GameForUpdatingDto, Game>();
         }
     }
 }
