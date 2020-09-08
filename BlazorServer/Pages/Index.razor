@@ -21,7 +21,7 @@ else
             <tr class="text-center font-weight-bold">
                 <td>Title</td>
                 <td>Description</td>
-                <td>PictureUrl</td>
+                <td>Picture</td>
                 <td>Price</td>
                 <td>Company</td>
                 <td>Genre</td>
@@ -36,7 +36,7 @@ else
                     <td>
                         <img height="100" width="200" src="@game.PictureUrl" />
                     </td>
-                    <td>@game.Price.ToString("c")</td>
+                    <td>@(game.Price <= 0.0M ? "FREE" : game.Price.ToString("c"))</td>
                     <td>@game.Company</td>
                     <td>@game.Genre</td>
                 </tr>
@@ -44,7 +44,7 @@ else
         </tbody>
     </table>
     <div>
-        @for (int i = 1; i <= pagination.Count / pagination.PageSize; i++)
+        @for (int i = 1; i <= pageCount; i++)
         {
             <a href="/@i">@i</a>
         }
@@ -55,6 +55,7 @@ else
     [Parameter]
     public int PageIndex { get; set; }
 
+    private int pageCount = 0;
     private Pagination<GameToReturnDto> pagination;
     private HttpClient httpClient;
 
@@ -65,6 +66,7 @@ else
         httpClient = new HttpClient();
         pagination = await httpClient.GetJsonAsync<Pagination<GameToReturnDto>>("http://localhost:5000/api/games?indexPage=" +
             ((PageIndex == 0) ? 1 : PageIndex));
+        pageCount = (int)Math.Ceiling((decimal)pagination.Count / pagination.PageSize);
     }
 
     private async Task SetUpAuth()
