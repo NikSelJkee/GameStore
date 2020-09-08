@@ -1,5 +1,6 @@
 ﻿using System;
 using BlazorServer.Data;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -20,6 +21,7 @@ namespace BlazorServer.Areas.Identity
                         context.Configuration.GetConnectionString("BlazorServerContextConnection")));
 
                 services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<BlazorServerContext>();
             });
         }

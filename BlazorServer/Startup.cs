@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlazorServer.Areas.Identity;
+using BlazorServer.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +29,7 @@ namespace BlazorServer
             services.AddAuthentication("Identity.Application").AddCookie();
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

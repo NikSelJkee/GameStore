@@ -1,5 +1,8 @@
 ﻿@page "/"
 @page "/{pageIndex:int}"
+@inject RoleManager<IdentityRole> roleManager
+@inject UserManager<IdentityUser> userManager
+@inject IConfiguration configuration
 
 @if (pagination == null)
 {
@@ -7,9 +10,15 @@
 }
 else
 {
+    <AuthorizeView Roles="Administrator">
+        <Authorized>
+            <a class="btn btn-primary" style="margin-bottom: 10px;" href="/createGame">Create a New Game</a>
+        </Authorized>
+    </AuthorizeView>
+
     <table class="table table-bordered">
         <thead>
-            <tr>
+            <tr class="text-center font-weight-bold">
                 <td>Title</td>
                 <td>Description</td>
                 <td>PictureUrl</td>
@@ -19,18 +28,18 @@ else
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < pagination.PageSize; i++)
+            @foreach (var game in pagination.Data)
             {
-            <tr>
-                <td>@pagination.Data[i].Title</td>
-                <td>@pagination.Data[i].Description</td>
-                <td>
-                    <img height="100" width="200" src="@pagination.Data[i].PictureUrl" />
-                </td>
-                <td>@pagination.Data[i].Price.ToString("c")</td>
-                <td>@pagination.Data[i].Company</td>
-                <td>@pagination.Data[i].Genre</td>
-            </tr>
+                <tr class="text-center">
+                    <td>@game.Title</td>
+                    <td>@game.Description</td>
+                    <td>
+                        <img height="100" width="200" src="@game.PictureUrl" />
+                    </td>
+                    <td>@game.Price.ToString("c")</td>
+                    <td>@game.Company</td>
+                    <td>@game.Genre</td>
+                </tr>
             }
         </tbody>
     </table>
@@ -51,8 +60,32 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        await SetUpAuth();
+
         httpClient = new HttpClient();
-        pagination = await httpClient.GetJsonAsync<Pagination<GameToReturnDto>>("http://localhost:5000/api/games?indexPage=" + 
+        pagination = await httpClient.GetJsonAsync<Pagination<GameToReturnDto>>("http://localhost:5000/api/games?indexPage=" +
             ((PageIndex == 0) ? 1 : PageIndex));
+    }
+
+    private async Task SetUpAuth()
+    {
+        string[] roles = { "Administrator" };
+
+        foreach (var role in roles)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(role);
+
+            if (roleExist == false)
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
+        }
+
+        var user = await userManager.FindByEmailAsync(configuration["DefaultAdmin"]);
+
+        if (user != null)
+        {
+            await userManager.AddToRoleAsync(user, "Administrator");
+        }
     }
 }
