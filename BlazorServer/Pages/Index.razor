@@ -25,6 +25,11 @@ else
                 <td>Price</td>
                 <td>Company</td>
                 <td>Genre</td>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized>
+                        <td></td>
+                    </Authorized>
+                </AuthorizeView>
             </tr>
         </thead>
         <tbody>
@@ -36,9 +41,17 @@ else
                     <td>
                         <img height="100" width="200" src="@game.PictureUrl" />
                     </td>
-                    <td>@(game.Price <= 0.0M ? "FREE" : game.Price.ToString("c"))</td>
+                    <td>@(game.Price > 0.0M ? game.Price.ToString("c") : "FREE")</td>
                     <td>@game.Company</td>
                     <td>@game.Genre</td>
+                    <AuthorizeView Roles="Administrator">
+                            <Authorized>
+                                <td>
+                                    <a class="btn btn-success" href="/editGame/@game.Id">Edit</a>
+                                    <a class="btn btn-danger" href="/deleteGame/@game.Id">Delete</a>
+                                </td>
+                            </Authorized>
+                    </AuthorizeView>
                 </tr>
             }
         </tbody>
