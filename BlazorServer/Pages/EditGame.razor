@@ -1,0 +1,145 @@
+﻿@page "/editGame/{gameId:int}"
+@inject NavigationManager NavigationManager
+
+<EditForm Model="GameForUpdating" OnSubmit="UpdateGameAsync">
+    <div class="container">
+        <div class="row px-2 mx-2 border">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+        </div>
+        <div class="col-12 px-3" style="border-bottom: 1px solid #325d88">
+            <h2 class="text-primary">Create Game</h2>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="Title">Title</label>
+                </div>
+                <div class="col-9">
+                    <InputText class="form-control" @bind-Value="GameForUpdating.Title" placeholder="Enter a title"></InputText>
+                    <span><ValidationMessage For="(() => GameForUpdating.Title)"></ValidationMessage></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="Description">Description</label>
+                </div>
+                <div class="col-9">
+                    <InputTextArea class="form-control" @bind-Value="GameForUpdating.Description" placeholder="Enter a Description"></InputTextArea>
+                    <span><ValidationMessage For="(() => GameForUpdating.Description)"></ValidationMessage></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="Price">Price</label>
+                </div>
+                <div class="col-9">
+                    <InputNumber class="form-control" @bind-Value="GameForUpdating.Price"></InputNumber>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="PictureUrl">Picture Url</label>
+                </div>
+                <div class="col-9">
+                    <InputText class="form-control" @bind-Value="GameForUpdating.PictureUrl" placeholder="Enter a picture url in format 'images/games/name.png'"></InputText>
+                    <span><ValidationMessage For="(() => GameForUpdating.PictureUrl)"></ValidationMessage></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="CompanyId">Company</label>
+                </div>
+                <div class="col-9">
+                    <BlazorServer.Components.CustomInputSelect class="form-control" @bind-Value="GameForUpdating.CompanyId">
+                        @if (Companies != null)
+                        {
+                            @foreach (var company in Companies)
+                            {
+                                <option value="@company.Id">@company.Name</option>
+                            }
+                        }
+                    </BlazorServer.Components.CustomInputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="GenreId">Genre</label>
+                </div>
+                <div class="col-9">
+                    <BlazorServer.Components.CustomInputSelect class="form-control" @bind-Value="GameForUpdating.GenreId">
+                        @if (Genres != null)
+                        {
+                            @foreach (var genre in Genres)
+                            {
+                                <option value="@genre.Id">@genre.Name</option>
+                            }
+                        }
+                    </BlazorServer.Components.CustomInputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-9 offset-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary form-control">Submit</button>
+                        </div>
+                        <div class="col-6">
+                            <a href="/" class="btn btn-danger form-control">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code{
+    [Parameter]
+    public int GameId { get; set; }
+
+    private IReadOnlyList<Company> Companies { get; set; }
+
+    private IReadOnlyList<Genre> Genres { get; set; }
+
+    private GameForUpdatingDto GameForUpdating { get; set; }
+        = new GameForUpdatingDto();
+
+    private HttpClient httpClient;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        httpClient = new HttpClient();
+        Companies = await httpClient.GetJsonAsync<IReadOnlyList<Company>>("http://localhost:5000/api/games/companies");
+        Genres = await httpClient.GetJsonAsync<IReadOnlyList<Genre>>("http://localhost:5000/api/games/genres");
+        var game = await httpClient.GetJsonAsync<GameToReturnDto>("http://localhost:5000/api/games/" + GameId);
+
+
+        //TODO: Add automapper profile (GameToReturnDto to GameForUpdatingDto)
+        GameForUpdating.Id = GameId;
+        GameForUpdating.Title = game.Title;
+        GameForUpdating.Description = game.Description;
+        GameForUpdating.Price = game.Price;
+        GameForUpdating.PictureUrl = game.PictureUrl.Replace("http://localhost:5000/", "");
+        GameForUpdating.CompanyId = Companies.FirstOrDefault(c => c.Name == game.Company).Id;
+        GameForUpdating.GenreId = Genres.FirstOrDefault(g => g.Name == game.Genre).Id;
+    }
+
+    private async Task UpdateGameAsync()
+    {
+        await httpClient.PutJsonAsync<GameForUpdatingDto>("http://localhost:5000/api/games/" + GameId, GameForUpdating);
+        NavigationManager.NavigateTo("/");
+    }
+}
