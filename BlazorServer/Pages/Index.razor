@@ -10,11 +10,14 @@
 }
 else
 {
+    <h2 class="text-primary">Game List</h2>
+
     <AuthorizeView Roles="Administrator">
         <Authorized>
             <a class="btn btn-primary" style="margin-bottom: 10px;" href="/createGame">Create a New Game</a>
         </Authorized>
     </AuthorizeView>
+
 
     <table class="table table-bordered">
         <thead>
@@ -45,12 +48,12 @@ else
                     <td>@game.Company</td>
                     <td>@game.Genre</td>
                     <AuthorizeView Roles="Administrator">
-                            <Authorized>
-                                <td>
-                                    <a class="btn btn-success" href="/editGame/@game.Id">Edit</a>
-                                    <a class="btn btn-danger" href="/deleteGame/@game.Id">Delete</a>
-                                </td>
-                            </Authorized>
+                        <Authorized>
+                            <td>
+                                <a class="btn btn-success form-control" href="/editGame/@game.Id">Edit</a>
+                                <a class="btn btn-danger form-control" style="margin-top: 10px" href="/deleteGame/@game.Id">Delete</a>
+                            </td>
+                        </Authorized>
                     </AuthorizeView>
                 </tr>
             }
