@@ -1,56 +1,108 @@
 ﻿@page "/createGame"
 @inject NavigationManager NavigationManager
 
-<h3 class="h3">New Game</h3>
 <EditForm Model="Game" OnSubmit="AddGameAsync">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="col-md-8">
-        <label for="Title">Title</label>
-        <InputText class="form-control" @bind-Value="Game.Title" placeholder="Enter a title"></InputText>
-        <span><ValidationMessage For="(() => Game.Title)"></ValidationMessage></span>
-    </div>
-    <div class="col-md-8">
-        <label for="Description">Description</label>
-        <InputText class="form-control" @bind-Value="Game.Description" placeholder="Enter a description"></InputText>
-        <span><ValidationMessage For="(() => Game.Description)"></ValidationMessage></span>
-    </div>
-    <div class="col-md-8">
-        <label for="Price">Price</label>
-        <InputNumber class="form-control" @bind-Value="Game.Price"></InputNumber>
-    </div>
-    <div class="col-md-8">
-        <label for="PictureUrl">PictureUrl</label>
-        <InputText class="form-control" @bind-Value="Game.PictureUrl" placeholder="Enter a picture url in format 'images/games/name.png'"></InputText>
-        <span><ValidationMessage For="(() => Game.PictureUrl)"></ValidationMessage></span>
-    </div>
-    <div class="col-md-8">
-        <label for="CompanyId">Company</label>
-        <BlazorServer.Components.CustomInputSelect class="form-control" @bind-Value="Game.CompanyId">
-            @if (Companies != null)
-            {
-                @foreach (var company in Companies)
-                {
-                    <option value="@company.Id">@company.Name</option>
-                }
-            }
-        </BlazorServer.Components.CustomInputSelect>
-    </div>
-    <div class="col-md-8">
-        <label for="GenreId">Genre</label>
-        <BlazorServer.Components.CustomInputSelect class="form-control" @bind-Value="Game.GenreId">
-            @if (Genres != null)
-            {
-                @foreach (var genre in Genres)
-                {
-                    <option value="@genre.Id">@genre.Name</option>
-                }
-            }
-        </BlazorServer.Components.CustomInputSelect>
-    </div>
-    <div class="col-md-8">
-        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Submit</button>
+    <div class="container">
+        <div class="row px-2 mx-2 border">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+        </div>
+        <div class="col-12 px-3" style="border-bottom: 1px solid #325d88">
+            <h2 class="text-primary">Create Game</h2>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="Title">Title</label>
+                </div>
+                <div class="col-9">
+                    <InputText class="form-control" @bind-Value="Game.Title" placeholder="Enter a title"></InputText>
+                    <span><ValidationMessage For="(() => Game.Title)"></ValidationMessage></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="Description">Description</label>
+                </div>
+                <div class="col-9">
+                    <InputTextArea class="form-control" @bind-Value="Game.Description" placeholder="Enter a Description"></InputTextArea>
+                    <span><ValidationMessage For="(() => Game.Description)"></ValidationMessage></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="Price">Price</label>
+                </div>
+                <div class="col-9">
+                    <InputNumber class="form-control" @bind-Value="Game.Price"></InputNumber>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="PictureUrl">Picture Url</label>
+                </div>
+                <div class="col-9">
+                    <InputText class="form-control" @bind-Value="Game.PictureUrl" placeholder="Enter a picture url in format 'images/games/name.png'"></InputText>
+                    <span><ValidationMessage For="(() => Game.PictureUrl)"></ValidationMessage></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="CompanyId">Company</label>
+                </div>
+                <div class="col-9">
+                    <BlazorServer.Components.CustomInputSelect class="form-control" @bind-Value="Game.CompanyId">
+                        @if (Companies != null)
+                        {
+                            @foreach (var company in Companies)
+                            {
+                                <option value="@company.Id">@company.Name</option>
+                            }
+                        }
+                    </BlazorServer.Components.CustomInputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-3">
+                    <label for="GenreId">Genre</label>
+                </div>
+                <div class="col-9">
+                    <BlazorServer.Components.CustomInputSelect class="form-control" @bind-Value="Game.GenreId">
+                        @if (Genres != null)
+                        {
+                            @foreach (var genre in Genres)
+                            {
+                                <option value="@genre.Id">@genre.Name</option>
+                            }
+                        }
+                    </BlazorServer.Components.CustomInputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 pt-3">
+            <div class="form-group row">
+                <div class="col-9 offset-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary form-control">Submit</button>
+                        </div>
+                        <div class="col-6">
+                            <a href="/" class="btn btn-danger form-control">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </EditForm>
 
