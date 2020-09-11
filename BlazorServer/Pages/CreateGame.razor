@@ -121,6 +121,8 @@
         httpClient = new HttpClient();
         Companies = await httpClient.GetJsonAsync<IReadOnlyList<Company>>("http://localhost:5000/api/games/companies");
         Genres = await httpClient.GetJsonAsync<IReadOnlyList<Genre>>("http://localhost:5000/api/games/genres");
+        Game.CompanyId = Companies.FirstOrDefault().Id;
+        Game.GenreId = Genres.FirstOrDefault().Id;
     }
 
     private async Task AddGameAsync()
