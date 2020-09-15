@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,20 +17,28 @@ namespace Core.Specifications
         {
             AddInclude(g => g.Company);
             AddInclude(g => g.Genre);
-            AddOrderBy(g => g.Title);
             ApplyPaging(gameParams.PageSize * (gameParams.IndexPage - 1), gameParams.PageSize);
 
-            if (!string.IsNullOrEmpty(gameParams.Sort))
+            switch (gameParams.Sort)
             {
-                switch (gameParams.Sort)
-                {
-                    case "priceAsc":
-                        AddOrderBy(g => g.Price);
-                        break;
-                    case "priceDesc":
-                        AddOrderByDescending(g => g.Price);
-                        break;
-                }
+                case SortState.TitleDesc:
+                    AddOrderByDescending(g => g.Title);
+                    break;
+                case SortState.PriceAsc:
+                    AddOrderBy(g => g.Price);
+                    break;
+                case SortState.PriceDesc:
+                    AddOrderByDescending(g => g.Price);
+                    break;
+                case SortState.CompanyAsc:
+                    AddOrderBy(g => g.Company.Name);
+                    break;
+                case SortState.CompanyDesc:
+                    AddOrderByDescending(g => g.Company.Name);
+                    break;
+                default:
+                    AddOrderBy(g => g.Title);
+                    break;
             }
         }
 

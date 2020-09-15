@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,7 +18,7 @@ namespace Core.Specifications
             set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
         }
 
-        public string Sort { get; set; }
+        public SortState Sort { get; set; }
 
         public int? CompanyId { get; set; }
         public int? GenreId { get; set; }
