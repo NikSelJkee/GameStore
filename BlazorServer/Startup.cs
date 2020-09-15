@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BlazorServer.Areas.Identity;
 using BlazorServer.Data;
+using BlazorServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,6 +31,7 @@ namespace BlazorServer
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+            services.AddScoped<IFileUpload, FileUpload>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

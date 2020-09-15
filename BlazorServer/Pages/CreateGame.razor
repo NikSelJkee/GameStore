@@ -1,5 +1,7 @@
 ﻿@page "/createGame"
+
 @inject NavigationManager NavigationManager
+@inject IFileUpload FileUpload
 
 <EditForm Model="Game" OnSubmit="AddGameAsync">
     <div class="container">
@@ -45,10 +47,10 @@
         <div class="col-8 pt-3">
             <div class="form-group row">
                 <div class="col-3">
-                    <label for="PictureUrl">Picture Url</label>
+                    <label for="PictureUrl">Picture</label>
                 </div>
                 <div class="col-9">
-                    <InputText class="form-control" @bind-Value="Game.PictureUrl" placeholder="Enter a picture url in format 'images/games/name.png'"></InputText>
+                    <BlazorInputFile.InputFile OnChange="HandleFileSelected"></BlazorInputFile.InputFile>
                     <span><ValidationMessage For="(() => Game.PictureUrl)"></ValidationMessage></span>
                 </div>
             </div>
@@ -107,6 +109,10 @@
 </EditForm>
 
 @code {
+    private IFileListEntry file;
+    private static Stream fileStream;
+    private string fileName;
+
     private IReadOnlyList<Company> Companies { get; set; }
 
     private IReadOnlyList<Genre> Genres { get; set; }
@@ -127,7 +133,25 @@
 
     private async Task AddGameAsync()
     {
+        var content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+        content.Add(new StreamContent(fileStream), "image", fileName);
+
+        Game.PictureUrl = "/images/games/" + fileName;
+        await httpClient.PostAsync("http://localhost:5000/api/images", content);
         await httpClient.PostJsonAsync("http://localhost:5000/api/games", Game);
         NavigationManager.NavigateTo("/");
+    }
+
+    private async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        file = files.FirstOrDefault();
+
+        if (file != null)
+        {
+            fileStream = await FileUpload.UploadAsync(file);
+            fileStream.Position = 0;
+            fileName = file.Name;
+        }
     }
 }
