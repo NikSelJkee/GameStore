@@ -30,9 +30,9 @@ namespace Infrastructure.Data
                 query = query.OrderByDescending(specification.OrderByDescending);
             }
 
-            if (specification.IsPagingEnabled)
+            if (specification.PaginationParams.IsPagingEnabled)
             {
-                query = query.Skip(specification.Skip).Take(specification.Take);
+                query = query.Skip(specification.PaginationParams.Skip).Take(specification.PaginationParams.Take);
             }
 
             query = specification.Includes.Aggregate(query, (current, include) => current.Include(include));
