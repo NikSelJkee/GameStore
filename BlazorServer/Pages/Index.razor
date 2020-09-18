@@ -1,8 +1,8 @@
 ﻿@page "/"
 @page "/{pageIndex:int}"
-@inject RoleManager<IdentityRole> roleManager
-@inject UserManager<IdentityUser> userManager
-@inject IConfiguration configuration
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<IdentityUser> UserManager
+@inject IConfiguration Configuration
 @inject NavigationManager NavigationManager
 
 @if (pagination == null)
@@ -61,16 +61,18 @@ else
         </tbody>
     </table>
     <div>
-        @for (int i = 1; i <= pageCount; i++)
-        {
-            <a href="/@i">@i</a>
-        }
+        <ul class="pagination">
+            @for (int i = 1; i <= pageCount; i++)
+            {
+                <li class="page-item"><a class="page-link" href="/@i">@i</a></li>
+            }
+        </ul>
     </div>
 }
 
 @code{
     [Parameter]
-    public int PageIndex { get; set; }
+    public int PageIndex { get; set; } = 1;
 
     private int pageCount = 0;
     private Pagination<GameToReturnDto> pagination;
@@ -89,7 +91,7 @@ else
     private async Task DeleteGame(int id)
     {
         await httpClient.DeleteAsync("http://localhost:5000/api/games/" + id);
-        NavigationManager.NavigateTo("/", true);
+        NavigationManager.NavigateTo($"/{PageIndex}", true);
     }
 
     private async Task SetUpAuth()
@@ -98,19 +100,24 @@ else
 
         foreach (var role in roles)
         {
-            var roleExist = await roleManager.RoleExistsAsync(role);
+            var roleExist = await RoleManager.RoleExistsAsync(role);
 
             if (roleExist == false)
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
+                await RoleManager.CreateAsync(new IdentityRole(role));
             }
         }
 
-        var user = await userManager.FindByEmailAsync(configuration["DefaultAdmin"]);
+        var admin = await UserManager.FindByEmailAsync(Configuration["DefaultAdmin"]);
 
-        if (user != null)
+        if (admin != null)
         {
-            await userManager.AddToRoleAsync(user, "Administrator");
+            var adminRoles = await UserManager.GetRolesAsync(admin);
+
+            if (!adminRoles.Contains("Administrator"))
+            {
+                await UserManager.AddToRoleAsync(admin, "Administrator");
+            }
         }
     }
 }

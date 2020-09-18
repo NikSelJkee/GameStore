@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IFileUpload FileUpload
 
-<EditForm Model="Game" OnSubmit="AddGameAsync">
+<EditForm Model="Game" OnValidSubmit="AddGameAsync">
     <div class="container">
         <div class="row px-2 mx-2 border">
             <DataAnnotationsValidator />
@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-9">
                     <InputText class="form-control" @bind-Value="Game.Title" placeholder="Enter a title"></InputText>
-                    <span><ValidationMessage For="(() => Game.Title)"></ValidationMessage></span>
+                    <ValidationMessage For="(() => Game.Title)"></ValidationMessage>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-9">
                     <InputTextArea class="form-control" @bind-Value="Game.Description" placeholder="Enter a Description"></InputTextArea>
-                    <span><ValidationMessage For="(() => Game.Description)"></ValidationMessage></span>
+                    <ValidationMessage For="(() => Game.Description)"></ValidationMessage>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                 </div>
                 <div class="col-9">
                     <BlazorInputFile.InputFile OnChange="HandleFileSelected"></BlazorInputFile.InputFile>
-                    <span><ValidationMessage For="(() => Game.PictureUrl)"></ValidationMessage></span>
+                    <ValidationMessage For="(() => Game.PictureUrl)"></ValidationMessage>
                 </div>
             </div>
         </div>
@@ -133,12 +133,15 @@
 
     private async Task AddGameAsync()
     {
-        var content = new MultipartFormDataContent();
-        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-        content.Add(new StreamContent(fileStream), "image", fileName);
+        if (fileStream != null)
+        {
+            var content = new MultipartFormDataContent();
+            content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+            content.Add(new StreamContent(fileStream), "image", fileName);
+            await httpClient.PostAsync("http://localhost:5000/api/images", content);
+            Game.PictureUrl = "/images/games/" + fileName;
+        }
 
-        Game.PictureUrl = "/images/games/" + fileName;
-        await httpClient.PostAsync("http://localhost:5000/api/images", content);
         await httpClient.PostJsonAsync("http://localhost:5000/api/games", Game);
         NavigationManager.NavigateTo("/");
     }
