@@ -17,19 +17,12 @@ namespace API.Controllers
 {
     public class GamesController : BaseApiController
     {
-        private readonly IGenericRepository<Game> _gamesRepository;
-        private readonly IGenericRepository<Company> _gameCompaniesRepository;
-        private readonly IGenericRepository<Genre> _gameGenresRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GamesController(IGenericRepository<Game> gamesRepository,
-            IGenericRepository<Company> gameCompaniesRepository,
-            IGenericRepository<Genre> gameGenresRepository,
-            IMapper mapper)
+        public GamesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _gamesRepository = gamesRepository;
-            _gameCompaniesRepository = gameCompaniesRepository;
-            _gameGenresRepository = gameGenresRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -39,8 +32,8 @@ namespace API.Controllers
         {
             var specification = new GameWithCompaniesAndGenresSpecification(gameParams);
             var countSpecification = new GameWithFilterForCountSpecification(gameParams);
-            var totalItems = await _gamesRepository.CountAsync(countSpecification);
-            var data = await _gamesRepository.GetAllWithSpecificationAsync(specification);
+            var totalItems = await _unitOfWork.Games.CountAsync(countSpecification);
+            var data = await _unitOfWork.Games.GetAllWithSpecificationAsync(specification);
             var games = _mapper.Map<IReadOnlyList<GameToReturnDto>>(data);
 
             return Ok(new Pagination<GameToReturnDto>(gameParams.IndexPage, gameParams.PageSize, totalItems, games));
@@ -50,7 +43,7 @@ namespace API.Controllers
         public async Task<ActionResult<GameToReturnDto>> GetGame(int id)
         {
             var specification = new GameWithCompaniesAndGenresSpecification(id);
-            var game = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+            var game = await _unitOfWork.Games.GetEntityWithSpecificationAsync(specification);
 
             if (game == null)
                 return NotFound(new ApiResponse(404, "Game Not Found"));
@@ -61,7 +54,7 @@ namespace API.Controllers
         [HttpGet("companies")]
         public async Task<ActionResult<IReadOnlyList<Company>>> GetGameCompanies()
         {
-            var companies = await _gameCompaniesRepository.GetAllAsync();
+            var companies = await _unitOfWork.Games.GetAllAsync();
 
             return Ok(companies);
         }
@@ -69,7 +62,7 @@ namespace API.Controllers
         [HttpGet("genres")]
         public async Task<ActionResult<IReadOnlyList<Genre>>> GetGameGenres()
         {
-            var genres = await _gameGenresRepository.GetAllAsync();
+            var genres = await _unitOfWork.Games.GetAllAsync();
 
             return Ok(genres);
         }
@@ -78,19 +71,19 @@ namespace API.Controllers
         public async Task<ActionResult<GameToReturnDto>> CreateGame(
             [FromBody]GameForCreatingDto gameForCreating)
         {
-            if (!await _gameCompaniesRepository.ExistsAsync(gameForCreating.CompanyId))
+            if (!await _unitOfWork.Companies.ExistsAsync(gameForCreating.CompanyId))
                 return NotFound(new ApiResponse(404, "Company Not Found"));
 
-            if (!await _gameGenresRepository.ExistsAsync(gameForCreating.GenreId))
+            if (!await _unitOfWork.Genres.ExistsAsync(gameForCreating.GenreId))
                 return NotFound(new ApiResponse(404, "Genre Not Found"));
 
             var game = _mapper.Map<Game>(gameForCreating);
 
-            await _gamesRepository.AddAsync(game);
-            await _gamesRepository.SaveAsync();
+            await _unitOfWork.Games.AddAsync(game);
+            await _unitOfWork.SaveAsync();
 
             var specification = new GameWithCompaniesAndGenresSpecification(game.Id);
-            var gameToReturn = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+            var gameToReturn = await _unitOfWork.Games.GetEntityWithSpecificationAsync(specification);
 
             return Ok(_mapper.Map<GameToReturnDto>(gameToReturn));
         }
@@ -99,10 +92,10 @@ namespace API.Controllers
         public async Task<ActionResult<GameToReturnDto>> UpdateGame(int id, 
             [FromBody]GameForUpdatingDto gameForUpdating)
         {
-            if (!await _gameCompaniesRepository.ExistsAsync(gameForUpdating.CompanyId))
+            if (!await _unitOfWork.Companies.ExistsAsync(gameForUpdating.CompanyId))
                 return NotFound(new ApiResponse(404, "Company Not Found"));
 
-            if (!await _gameGenresRepository.ExistsAsync(gameForUpdating.GenreId))
+            if (!await _unitOfWork.Genres.ExistsAsync(gameForUpdating.GenreId))
                 return NotFound(new ApiResponse(404, "Genre Not Found"));
 
             if (gameForUpdating.Id != id)
@@ -110,11 +103,11 @@ namespace API.Controllers
 
             var game = _mapper.Map<Game>(gameForUpdating);
 
-            _gamesRepository.Update(game);
-            await _gamesRepository.SaveAsync();
+            _unitOfWork.Games.Update(game);
+            await _unitOfWork.SaveAsync();
 
             var specification = new GameWithCompaniesAndGenresSpecification(game.Id);
-            var gameToReturn = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+            var gameToReturn = await _unitOfWork.Games.GetEntityWithSpecificationAsync(specification);
 
             return Ok(_mapper.Map<GameToReturnDto>(gameToReturn));
         }
@@ -123,13 +116,13 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteGame(int id)
         {
             var specification = new GameWithCompaniesAndGenresSpecification(id);
-            var game = await _gamesRepository.GetEntityWithSpecificationAsync(specification);
+            var game = await _unitOfWork.Games.GetEntityWithSpecificationAsync(specification);
 
             if (game == null)
                 return NotFound(new ApiResponse(404, "Game Not Found"));
 
-            _gamesRepository.Remove(game);
-            await _gamesRepository.SaveAsync();
+            _unitOfWork.Games.Remove(game);
+            await _unitOfWork.SaveAsync();
 
             return Ok();
         }

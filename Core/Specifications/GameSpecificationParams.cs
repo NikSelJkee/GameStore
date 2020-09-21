@@ -8,10 +8,10 @@ namespace Core.Specifications
     public class GameSpecificationParams
     {
         public const int MaxPageSize = 50;
+
         public int IndexPage { get; set; } = 1;
 
         private int _pageSize = 6;
-
         public int PageSize
         {
             get => _pageSize;
